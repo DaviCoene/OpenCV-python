@@ -5,12 +5,13 @@ import random
 
 def function(event, x ,y,flags,  param):
     global b, r, g, drawing, Radius, raio
-    global A, B, C,D
+    global A, B, C,D, f
     if event==cv2.EVENT_FLAG_LBUTTON:
         drawing = True 
         
-        
     if drawing:
+        refazer.clear()
+        f= True
         A = x
         B = y
         blue = b
@@ -22,8 +23,15 @@ def function(event, x ,y,flags,  param):
     
     if event==cv2.EVENT_FLAG_MBUTTON:
         drawing = False
-    
         
+    if event == cv2.EVENT_RBUTTONDOWN:  # Conta-gotas ao clicar com botão direito
+        # Verifica se as coordenadas estão dentro da imagem
+        if x >= 0 and x < img.shape[1] and y >= 0 and y < img.shape[0]:
+            cor_pixel = img[y, x]  # Captura a cor do pixel na posição (x, y)
+            b, g, r = int(cor_pixel[0]), int(cor_pixel[1]), int(cor_pixel[2])
+
+            
+f= True
 b = 0
 g = 0
 r = 0
@@ -33,13 +41,14 @@ def circle(A,B,blue,green,red, raio):
 
 
 retagulo_fake = []
+refazer = []
 
 cv2.namedWindow("janela")
 cv2.setMouseCallback("janela", function)
 
 
 while True:    
-    img = np.full((2048,2048, 3), (255,255,255), np.uint8)
+    img = np.full((1080,1920, 3), (255,255,255), np.uint8)
     for (A,B,blue,green,red, raio) in retagulo_fake:
         circle(A,B,blue,green,red, raio)
     Testo4 = "Espessura: " + str(Radius)
@@ -48,7 +57,7 @@ while True:
     testo7 = "z = to increase radius, x = to decrease radius"
     testo8 = "1 = black, 2 = to white, 3 = to yellow, 4 = red"
     testo10 = "5 = green 6 = blue, 7 gray"
-    testo9 = "0 = to undo p = rubber"
+    testo9 = "0 = to undo p = rubber, Shift + S to save"
     fonte = cv2.FONT_HERSHEY_SIMPLEX
     linha = cv2.LINE_AA
     cv2.putText(img, Testo4, (100,100), fonte, 1.5, (0,0,0),4,linha)
@@ -124,17 +133,33 @@ while True:
         b = 255    
         Radius = 250    
     if key == 48:    
-        if len(retagulo_fake) != 0:    
+        if len(retagulo_fake) != 0:
+            refazer.append(retagulo_fake[-1])
             retagulo_fake.pop()      
+            refazer.append(retagulo_fake[-1])
             retagulo_fake.pop()            
-            retagulo_fake.pop()              
+            refazer.append(retagulo_fake[-1])
+            retagulo_fake.pop()   
+           
+              
+    if key == 57:
+        if f == True:
+            refazer.reverse()     
+            f = False
+        if len(refazer) != 0:
+            retagulo_fake.append(refazer[0])
+            del refazer[0]
+            retagulo_fake.append(refazer[0])
+            del refazer[0]
+            retagulo_fake.append(refazer[0])
+            del refazer[0]
     if key == 32:  
         retagulo_fake.clear()
     if key == 27:  # Esc
         break
     
     if key == 83:
-        cv2.imwrite(f"paint1{str(b)}.jpg", img) #to save
+        cv2.imwrite(f"paint1{str(random.randint(0,1000))}.jpg", img) #to save
         
 
 
