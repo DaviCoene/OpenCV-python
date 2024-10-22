@@ -30,7 +30,7 @@ def function(event, x ,y,flags,  param):
             cor_pixel = img[y, x]  # Captura a cor do pixel na posição (x, y)
             b, g, r = int(cor_pixel[0]), int(cor_pixel[1]), int(cor_pixel[2])
 
-            
+record = False 
 f= True
 b = 0
 g = 0
@@ -46,31 +46,46 @@ refazer = []
 cv2.namedWindow("janela")
 cv2.setMouseCallback("janela", function)
 
+fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+output = cv2.VideoWriter(f"paint{str(random.randint(0,1000))}.mp4", fourcc, 160, (1920,1080))
 
+while True:
+    img = np.full((1080,1920, 3), (255,255,255), np.uint8)
+    testo90 = " 'n'2x to start "
+    fonte = cv2.FONT_HERSHEY_SIMPLEX
+    linha = cv2.LINE_AA
+    cv2.putText(img, testo90, (500,1000,), fonte, 5, (0,0,0),4,linha)
+    key = cv2.waitKey(1) & 0xFF  
+    if key == 110:
+        break  
+    cv2.imshow("janela", img)
 while True:    
     img = np.full((1080,1920, 3), (255,255,255), np.uint8)
     for (A,B,blue,green,red, raio) in retagulo_fake:
         circle(A,B,blue,green,red, raio)
-    Testo4 = "Espessura: " + str(Radius)
-    testo5 = "b = To increase blue, r = to increase Red, g to increase = green "
-    testo6 = "Space to clean all"
-    testo7 = "z = to increase radius, x = to decrease radius"
-    testo8 = "1 = black, 2 = to white, 3 = to yellow, 4 = red"
-    testo10 = "5 = green 6 = blue, 7 gray"
-    testo9 = "0 = to undo p = rubber, Shift + S to save"
-    fonte = cv2.FONT_HERSHEY_SIMPLEX
-    linha = cv2.LINE_AA
-    cv2.putText(img, Testo4, (100,100), fonte, 1.5, (0,0,0),4,linha)
-    cv2.putText(img, testo5, (1100,50), fonte, 0.5, (0,0,0),2,linha)
-    cv2.putText(img, testo6, (1100,75), fonte, 0.5, (0,0,0),2,linha)
-    cv2.putText(img, testo7, (1100,100), fonte, 0.5, (0,0,0),2,linha)
-    cv2.putText(img, testo8, (1100,125), fonte, 0.5, (0,0,0),2,linha)
-    cv2.putText(img, testo10, (1100,150), fonte, 0.5, (0,0,0),2,linha)
-    cv2.putText(img, testo9, (1100,175), fonte, 0.5, (0,0,0),2,linha)
-    cv2.circle(img, (1800, 100), 40, (0,0,0), -1)
-    cv2.circle(img, (1800, 100), 30, (b,g,r), -1)
     
     
+    if record == True:
+        output.write(img)
+        cv2.circle(img, (1800, 500), 30, (0,0,255), -1)
+        Testo4 = "Espessura: " + str(Radius)
+        testo5 = "b = To increase blue, r = to increase Red, g to increase = green "
+        testo6 = "Space to clean all"
+        testo7 = "z = to increase radius, x = to decrease radius"
+        testo8 = "1 = black, 2 = to white, 3 = to yellow, 4 = red"
+        testo10 = "5 = green 6 = blue, 7 gray"
+        testo9 = "0 = to undo p = eraser, Shift + S to save"
+        fonte = cv2.FONT_HERSHEY_SIMPLEX
+        linha = cv2.LINE_AA
+        cv2.putText(img, Testo4, (100,100), fonte, 1.5, (0,0,0),4,linha)
+        cv2.putText(img, testo5, (1100,50), fonte, 0.5, (0,0,0),2,linha)
+        cv2.putText(img, testo6, (1100,75), fonte, 0.5, (0,0,0),2,linha)
+        cv2.putText(img, testo7, (1100,100), fonte, 0.5, (0,0,0),2,linha)
+        cv2.putText(img, testo8, (1100,125), fonte, 0.5, (0,0,0),2,linha)
+        cv2.putText(img, testo10, (1100,150), fonte, 0.5, (0,0,0),2,linha)
+        cv2.putText(img, testo9, (1100,175), fonte, 0.5, (0,0,0),2,linha)
+        cv2.circle(img, (1800, 100), 40, (0,0,0), -1)
+        cv2.circle(img, (1800, 100), 30, (b,g,r), -1)
 
     key = cv2.waitKey(1) & 0xFF  
     if key == 98:  
@@ -127,6 +142,11 @@ while True:
         g = 100   
         b = 100   
         
+    if key == 110:
+        record = True
+    if key ==  111:
+        record = False
+        output.release()
     if key == 112:     
         r = 255   
         g = 255   
@@ -164,5 +184,5 @@ while True:
 
 
     cv2.imshow("janela", img)
-
+output.release()
 cv2.destroyAllWindows()
